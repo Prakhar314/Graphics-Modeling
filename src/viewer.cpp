@@ -60,15 +60,10 @@ namespace COL781 {
 			glm::mat4 model = glm::mat4(1.0f);
 			glm::mat4 view;    
 			glm::mat4 projection = camera.projectionMatrix();
-
-			float rotation = 0.0f;
-			float rotateSpeed = 1.0f;
 			while (!r.shouldQuit()) {
 				r.clear(glm::vec4(1.0, 1.0, 1.0, 1.0));
 				view = camera.viewMatrix();
 				view = glm::lookAt(camera.position, camera.position + camera.front, camera.up);
-				rotation += rotateSpeed / 100.0f;
-				view = glm::rotate(view, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
 				r.setUniform(program, "modelView", view*model);
 				r.setUniform(program, "projection", projection);
 				r.setUniform(program, "lightPos", camera.position);
