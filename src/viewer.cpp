@@ -12,11 +12,11 @@ namespace COL781 {
 			pitch =  0.0f;
 			lastX =  800.0f / 2.0;
 			lastY =  600.0 / 2.0;
-			fov   =  45.0f;
+			fov   =  60.0f;
 
 			this->aspect = aspect;
 
-			position = glm::vec3(0.0f, 0.0f,  3.0f);
+			position = glm::vec3(0.0f, 0.0f,  1.5f);
 			front = glm::vec3(0.0f, 0.0f, -1.0f);
 			up = glm::vec3(0.0f, 1.0f,  0.0f);
 		}
@@ -26,7 +26,7 @@ namespace COL781 {
 		}
 
 		glm::mat4 Camera::projectionMatrix() {
-			return glm::perspective(glm::radians(60.0f), aspect, 0.1f, 100.0f);
+			return glm::perspective(glm::radians(fov), aspect, 0.1f, 100.0f);
 		}
 
 		bool Viewer::initialize(const std::string &title, int width, int height) {
