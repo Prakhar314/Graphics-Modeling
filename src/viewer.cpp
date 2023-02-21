@@ -60,10 +60,27 @@ namespace COL781 {
 			glm::mat4 model = glm::mat4(1.0f);
 			glm::mat4 view;    
 			glm::mat4 projection = camera.projectionMatrix();
+
+			// Camera rotation speed
+			float rotation = 0.0f;
+			float rotateSpeed = 30.0f; // Degrees per second
+
+			float tPrevFrame = 0.0f;
+			float deltaT = 0.0f;
+			Uint64 t0 = SDL_GetTicks64();
+			tPrevFrame = (float)t0;
+
 			while (!r.shouldQuit()) {
+				Uint64 t = SDL_GetTicks64();
+				deltaT = ((float)t - tPrevFrame) * 1e-3;  
+				tPrevFrame = (float)t;
+
 				r.clear(glm::vec4(1.0, 1.0, 1.0, 1.0));
 				view = camera.viewMatrix();
 				view = glm::lookAt(camera.position, camera.position + camera.front, camera.up);
+				rotation += rotateSpeed * deltaT;
+				view = glm::rotate(view, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+				
 				r.setUniform(program, "modelView", view*model);
 				r.setUniform(program, "projection", projection);
 				r.setUniform(program, "lightPos", camera.position);
