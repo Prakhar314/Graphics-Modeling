@@ -123,7 +123,7 @@ namespace COL781 {
 				lastxPos = xPos;
 				lastyPos = yPos;
 
-				view = camera.viewMatrix;
+				view = camera.getViewMatrix();
 
 				r.setUniform(program, "modelView", view*model);
 				r.setUniform(program, "projection", projection);
