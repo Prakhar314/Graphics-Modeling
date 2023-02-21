@@ -17,16 +17,39 @@ namespace COL781 {
 			this->aspect = aspect;
 
 			position = glm::vec3(0.0f, 0.0f,  1.5f);
-			front = glm::vec3(0.0f, 0.0f, -1.0f);
+			lookAt = glm::vec3(0.0f, 0.0f, 0.0f);
 			up = glm::vec3(0.0f, 1.0f,  0.0f);
+
+			updateViewMatrix();
 		}
 
-		glm::mat4 Camera::viewMatrix() {
-			return glm::lookAt(position, position + front, up);
+		glm::mat4 Camera::getViewMatrix() {
+			return viewMatrix;
 		}
 
-		glm::mat4 Camera::projectionMatrix() {
+		void Camera::updateViewMatrix() {
+			viewMatrix = glm::lookAt(position, lookAt, up);
+		}
+
+		glm::mat4 Camera::getProjectionMatrix() {
 			return glm::perspective(glm::radians(fov), aspect, 0.1f, 100.0f);
+		}
+			glm::vec3 getRightVector();
+
+		glm::vec3 Camera:: getViewDir() {
+			return -glm::transpose(viewMatrix)[2];
+		}
+
+		glm::vec3 Camera::getRightVector() {
+			return glm::transpose(viewMatrix)[0];
+		}
+
+		void Camera::setCameraView(glm::vec3 position_vector, glm::vec3 lookat_vector, glm::vec3 up_vector) {
+			position = std::move(position_vector);
+			lookAt = std::move(lookat_vector);
+			up = std::move(up_vector);
+
+			viewMatrix = glm::lookAt(position, lookAt, up);
 		}
 
 		bool Viewer::initialize(const std::string &title, int width, int height) {
@@ -59,28 +82,51 @@ namespace COL781 {
 			// The transformation matrix.
 			glm::mat4 model = glm::mat4(1.0f);
 			glm::mat4 view;    
-			glm::mat4 projection = camera.projectionMatrix();
+			glm::mat4 projection = camera.getProjectionMatrix();
 
-			// Camera rotation speed
-			float rotation = 0.0f;
-			float rotateSpeed = 30.0f; // Degrees per second
+			float deltaAngleX = 2.0 * 3.14 / 800.0;
+			float deltaAngleY = 3.14 / 600.0;
 
-			float tPrevFrame = 0.0f;
-			float deltaT = 0.0f;
-			Uint64 t0 = SDL_GetTicks64();
-			tPrevFrame = (float)t0;
+			int lastxPos, lastyPos, xPos, yPos;
+
+			SDL_GetMouseState(&lastxPos, &lastyPos);
 
 			while (!r.shouldQuit()) {
-				Uint64 t = SDL_GetTicks64();
-				deltaT = ((float)t - tPrevFrame) * 1e-3;  
-				tPrevFrame = (float)t;
-
 				r.clear(glm::vec4(1.0, 1.0, 1.0, 1.0));
-				view = camera.viewMatrix();
-				view = glm::lookAt(camera.position, camera.position + camera.front, camera.up);
-				rotation += rotateSpeed * deltaT;
-				view = glm::rotate(view, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-				
+
+				camera.updateViewMatrix();
+
+				Uint32 buttonState = SDL_GetMouseState(&xPos, &yPos);
+				if( buttonState & SDL_BUTTON(SDL_BUTTON_LEFT) ) {
+					glm::vec4 pivot = glm::vec4(camera.lookAt.x, camera.lookAt.y, camera.lookAt.z, 1.0f);
+					glm::vec4 position = glm::vec4(camera.position.x, camera.position.y, camera.position.z, 1.0f);
+
+					float xAngle = (float)(lastxPos - xPos) * deltaAngleX;
+					float yAngle = (float)(lastyPos - yPos) * deltaAngleY;
+
+					float cosAngle = dot(camera.getViewDir(), camera.up);
+
+					if(cosAngle * signbit(deltaAngleY) > 0.99f)
+						deltaAngleY = 0.0f;
+
+					glm::mat4 rotationMatX(1.0f);
+					rotationMatX = glm::rotate(rotationMatX, xAngle, camera.up);
+					position = (rotationMatX * (position - pivot)) + pivot;
+
+					glm::mat4 rotationMatY(1.0f);
+					rotationMatY = glm::rotate(rotationMatY, yAngle, camera.getRightVector());
+					glm::vec3 finalPosition = (rotationMatY * (position - pivot)) + pivot;
+					camera.position = finalPosition;
+					camera.updateViewMatrix();
+				}
+
+				lastxPos = xPos;
+				lastyPos = yPos;
+
+				camera.updateViewMatrix();
+
+				view = camera.viewMatrix;
+
 				r.setUniform(program, "modelView", view*model);
 				r.setUniform(program, "projection", projection);
 				r.setUniform(program, "lightPos", camera.position);
@@ -94,7 +140,6 @@ namespace COL781 {
 				r.setupWireFrame();
 				r.setUniform(program, "objectColor", glm::vec3(0.0f, 0.0f, 0.0f));
 				r.drawObject(object);
-				// vec3 update = v.getCameraUpdate(0.005f);
 				r.show();
 			}
 		}
