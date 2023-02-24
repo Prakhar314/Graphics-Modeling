@@ -1,6 +1,6 @@
 #include "viewer.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-
+#include <iostream>
 namespace COL781 {
 	namespace Viewer {
 
@@ -120,11 +120,27 @@ namespace COL781 {
 					camera.updateViewMatrix();
 				}
 
+				buttonState = SDL_GetMouseState(&xPos, &yPos);
+				if( buttonState & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
+					// Update camera parameters
+
+					float deltaY =  (float)(lastyPos - yPos) * 0.01f;
+					glm::mat4 dollyTransform = glm::mat4(1.0f);
+					dollyTransform = glm::translate(dollyTransform, normalize(camera.lookAt - camera.position) * deltaY);
+					glm::vec3 newCameraPosition = dollyTransform * glm::vec4(camera.position, 1.0f);
+					float newCameraFov = 2 * glm::atan(600.0f / (2 * deltaY)); // TODO Ask
+					
+					if(signbit(newCameraPosition.z) == signbit(camera.position.z)) {
+						camera.position = newCameraPosition;
+						camera.fov = newCameraFov; // TODO Ask
+						}
+				}
+
 				lastxPos = xPos;
 				lastyPos = yPos;
 
 				view = camera.getViewMatrix();
-
+				
 				r.setUniform(program, "modelView", view*model);
 				r.setUniform(program, "projection", projection);
 				r.setUniform(program, "lightPos", camera.position);
