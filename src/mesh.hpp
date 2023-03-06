@@ -45,11 +45,15 @@ class Mesh
 {
   private:
     /* data */
-    std::vector<Face> triangles;
-    std::vector<Vertex> vertices;
-    std::vector<HalfEdge> halfEdges;
+    Face* triangles;
+    Vertex* vertices;
+    HalfEdge* halfEdges;
+    size_t numVertices;
+    size_t numTriangles;
 
   public:
-    Mesh(glm::vec4 *vertices, int numVertices, glm::ivec3 *triangles, int numTriangles); 
+    Mesh(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 *triangles, int numTriangles); 
     void print();
+    void view();
+    ~Mesh();
 };
