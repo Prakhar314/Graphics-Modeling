@@ -8,6 +8,9 @@ find_package(glm REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
 
+add_executable(mesh src/mesh.cpp)
+target_link_libraries(mesh GLEW::GLEW glm::glm OpenGL::GL)
+
 add_library(viewer src/hw.cpp src/viewer.cpp)
 target_link_libraries(viewer GLEW::GLEW glm::glm OpenGL::GL SDL2::SDL2)
 
