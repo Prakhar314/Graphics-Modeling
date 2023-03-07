@@ -15,7 +15,7 @@ Mesh::Mesh(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 
   // Create the vertices
   for (int i = 0; i < numVertices; i++) {
     this->vertices[i].position = vertices[i];
-    this->vertices[i].normal = nromals[i];
+    this->vertices[i].normal = normals[i];
     this->vertices[i].index_mesh = i;
   }
   // Create the half edges and faces
