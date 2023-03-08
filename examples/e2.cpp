@@ -23,14 +23,14 @@ int main(){
       float x = cos(long_angle * j) * cos(lat_angle * i + lat_off);
       float y = sin(long_angle * j) * cos(lat_angle * i + lat_off);
       float z = sin(lat_angle * i + lat_off);
-      vertices[i*m+j] = translation * glm::vec4(x, y, z, 1);
+      vertices[i*m+j] = translation * glm::vec4(x / 2, y / 2, z / 2, 1);
       normals[i*m+j] = translation * glm::vec4(x, y, z, 0);
     }
   }
-  vertices[m*(n-1)] = translation * glm::vec4(0, 0, 1, 1);
-  normals[m*(n-1)] = translation * glm::vec4(0, 0, 1, 0);
-  vertices[m*(n-1)+1] = translation * glm::vec4(0, 0, -1, 1);
-  normals[m*(n-1)+1] = translation * glm::vec4(0, 0, -1, 0);
+  vertices[m*(n-1)] = translation * glm::vec4(0, 0, 0.5, 1);
+  normals[m*(n-1)] = translation * glm::vec4(0, 0, 0.5, 0);
+  vertices[m*(n-1)+1] = translation * glm::vec4(0, 0, -0.5, 1);
+  normals[m*(n-1)+1] = translation * glm::vec4(0, 0, -0.5, 0);
   // Create the triangles
   for (size_t i = 0; i < n - 2; i++) {
     for (size_t j = 0; j < m; j++) {
@@ -42,7 +42,7 @@ int main(){
     triangles[2*(m*(n-2)+j)] = glm::ivec3(m*(n-2)+j, m*(n-2)+(j+1)%m, m*(n-1));
     triangles[2*(m*(n-2)+j)+1] = glm::ivec3(j, m*(n-1) + 1, (j+1)%m);
   }
-  Mesh mesh(vertices, normals, numVertices, triangles, numTriangles);
+  Mesh mesh(vertices, numVertices, normals, numVertices, triangles, numTriangles);
   mesh.view();
   return 0;
 }

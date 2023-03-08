@@ -7,22 +7,22 @@
 struct HalfEdge;
 struct Face
 {
-    HalfEdge* halfEdge;
+    HalfEdge* halfEdge = nullptr;
 };
 struct Vertex
 {
-    HalfEdge* halfEdge;
+    HalfEdge* halfEdge = nullptr;
     int index_mesh;
     glm::vec3 normal;
     glm::vec3 position;
 };
 struct HalfEdge
 {
-    HalfEdge* next;
-    HalfEdge* prev;
-    HalfEdge* pair;
-    Vertex* head;
-    Face* left;
+    HalfEdge* next = nullptr;
+    HalfEdge* prev = nullptr;
+    HalfEdge* pair = nullptr;
+    Vertex* head = nullptr;
+    Face* left = nullptr;
 };
 
 template <class T1, class T2>
@@ -45,16 +45,16 @@ class Mesh
 {
   private:
     /* data */
-    Face* triangles;
-    Vertex* vertices;
-    HalfEdge* halfEdges;
+    Face* triangles = nullptr;
+    Vertex* vertices = nullptr;
+    HalfEdge* halfEdges = nullptr;
     size_t numVertices;
     size_t numTriangles;
 
   public:
-    Mesh(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 *triangles, int numTriangles);
+    Mesh(glm::vec3 *vertices, int numVertices, glm::vec3* normals, int numNormals, glm::ivec3 *triangles, int numTriangles);
     Mesh(std::string filename);
-    void init(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 *triangles, int numTriangles);
+    void init(glm::vec3 *vertices, int numVertices, glm::vec3* normals, int numNormals, glm::ivec3 *triangles, int numTriangles);
     void print();
     void view();
     void freeArrays();

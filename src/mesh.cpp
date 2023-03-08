@@ -6,7 +6,7 @@
 
 namespace V = COL781::Viewer;
 
-void Mesh::init(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 *triangles, int numTriangles){
+void Mesh::init(glm::vec3 *vertices, int numVertices, glm::vec3* normals, int numNormals, glm::ivec3 *triangles, int numTriangles){
   freeArrays();
 
   this->halfEdges = new HalfEdge[numTriangles * 3];
@@ -19,7 +19,12 @@ void Mesh::init(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::i
   // Create the vertices
   for (int i = 0; i < numVertices; i++) {
     this->vertices[i].position = vertices[i];
-    this->vertices[i].normal = normals[i];
+    if (i < numNormals){
+      this->vertices[i].normal = normals[i];
+    }
+    else{
+      this->vertices[i].normal = glm::vec3(0.0f, 0.0f, 0.0f);
+    }
     this->vertices[i].index_mesh = i;
   }
   // Create the half edges and faces
@@ -51,9 +56,9 @@ void Mesh::init(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::i
   }
 }
 
-Mesh::Mesh(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 *triangles, int numTriangles)
+Mesh::Mesh(glm::vec3 *vertices, int numVertices, glm::vec3* normals, int numNormals, glm::ivec3 *triangles, int numTriangles)
 {
-  init(vertices, normals, numVertices, triangles, numTriangles);
+  init(vertices, numVertices, normals, numNormals, triangles, numTriangles);
 }
 
 void Mesh::view(){
@@ -125,10 +130,10 @@ Mesh::Mesh(std::string filename){
           std::string last_val(temp.substr(temp.rfind("/") + 1)); 
           triangle[i] = stoi(last_val);
       }
-      triangles.push_back(triangle);
+      triangles.push_back(triangle - 1);
     }
   }
-  init(&vertices[0], &normals[0], vertices.size(), &triangles[0], triangles.size());
+  init(&vertices[0], vertices.size(), &normals[0], normals.size(), &triangles[0], triangles.size());
 }
 
 void Mesh::freeArrays(){

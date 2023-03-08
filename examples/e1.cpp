@@ -12,7 +12,7 @@ int main(){
   // Create the vertices
   for (size_t i = 0; i < m+1; i++) {
     for (size_t j = 0; j < n+1; j++) {
-      vertices[i*(n+1)+j] = glm::vec3(1.0f * i / m, 1.0f * j / n, 0);
+      vertices[i*(n+1)+j] = glm::vec3(1.0f * i / m, 1.0f * j / n, 0) - 0.5f;
       normals[i*(n+1)+j] = glm::vec3(0,0,1);
     }
   }
@@ -23,7 +23,7 @@ int main(){
       triangles[2*(i*n+j)+1] = glm::ivec3(i*(n+1)+j+1, (i+1)*(n+1)+j+1, (i+1)*(n+1)+j);
     }
   }
-  Mesh mesh(vertices, normals, numVertices, triangles, numTriangles);
+  Mesh mesh(vertices, numVertices, normals, numVertices, triangles, numTriangles);
   mesh.view();
   return 0;
 }
