@@ -1,14 +1,18 @@
 #include "mesh.hpp"
 #include "viewer.hpp"
 #include <iostream>
+#include <sstream>
+#include <fstream>
 
 namespace V = COL781::Viewer;
-Mesh::Mesh(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 *triangles, int numTriangles)
-{
-  std::unordered_map<std::pair<int, int>, HalfEdge*, hash_pair<int,int>> edgeMap;
+
+void Mesh::init(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 *triangles, int numTriangles){
+  freeArrays();
+
   this->halfEdges = new HalfEdge[numTriangles * 3];
   this->triangles = new Face[numTriangles];
   this->vertices = new Vertex[numVertices];
+  std::unordered_map<std::pair<int, int>, HalfEdge*, hash_pair<int,int>> edgeMap;
   this->numVertices = numVertices;
   this->numTriangles = numTriangles;
 
@@ -47,6 +51,11 @@ Mesh::Mesh(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 
   }
 }
 
+Mesh::Mesh(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 *triangles, int numTriangles)
+{
+  init(vertices, normals, numVertices, triangles, numTriangles);
+}
+
 void Mesh::view(){
   glm::vec3* vertices = new glm::vec3[this->numVertices];
   glm::vec3* normals = new glm::vec3[this->numVertices];
@@ -72,9 +81,6 @@ void Mesh::view(){
 	v.setNormals(this->numVertices, normals);
 	v.setTriangles(this->numTriangles, triangles);
 	v.view();
-  delete[] vertices;
-  delete[] normals;
-  delete[] triangles;
 }
 
 void Mesh::print(){
@@ -92,8 +98,54 @@ void Mesh::print(){
   }
 }
 
+Mesh::Mesh(std::string filename){
+  std::ifstream f(filename);
+  std::string line;
+  std::vector<glm::vec3> vertices, normals;
+  std::vector<glm::ivec3> triangles;
+  while(getline(f,line)){
+    std::istringstream s(line);
+    std::string head;
+    s >> head;
+    if(head == "vn"){
+      glm::vec3 normal;
+      s >> normal.x >> normal.y >> normal.z;
+      normals.push_back(normal);
+    }
+    if(head == "v"){
+      glm::vec3 vertex;
+      s >> vertex.x >> vertex.y >> vertex.z;
+      vertices.push_back(vertex);
+    }
+    if(head == "f"){
+      std::string temp;
+      glm::ivec3 triangle;
+      for(int i=0; i<3; i++){
+          s >> temp;
+          std::string last_val(temp.substr(temp.rfind("/") + 1)); 
+          triangle[i] = stoi(last_val);
+      }
+      triangles.push_back(triangle);
+    }
+  }
+  init(&vertices[0], &normals[0], vertices.size(), &triangles[0], triangles.size());
+}
+
+void Mesh::freeArrays(){
+  if(this->halfEdges != nullptr){
+    delete[] this->halfEdges;
+  }
+  if(this->triangles != nullptr){
+    delete[] this->triangles;
+  }
+  if(this->vertices != nullptr){
+    delete[] this->vertices;
+  }
+  this->vertices = nullptr;
+  this->triangles = nullptr;
+  this->halfEdges = nullptr;
+}
+
 Mesh::~Mesh(){
-  delete[] this->halfEdges;
-  delete[] this->triangles;
-  delete[] this->vertices;
+  freeArrays();
 }

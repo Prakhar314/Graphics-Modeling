@@ -23,3 +23,6 @@ target_link_libraries(e1 mesh)
 
 add_executable(e2 examples/e2.cpp)
 target_link_libraries(e2 mesh)
+
+add_executable(e3 examples/e3.cpp)
+target_link_libraries(e3 mesh)

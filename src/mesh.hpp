@@ -52,8 +52,11 @@ class Mesh
     size_t numTriangles;
 
   public:
-    Mesh(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 *triangles, int numTriangles); 
+    Mesh(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 *triangles, int numTriangles);
+    Mesh(std::string filename);
+    void init(glm::vec3 *vertices, glm::vec3* normals, int numVertices, glm::ivec3 *triangles, int numTriangles);
     void print();
     void view();
+    void freeArrays();
     ~Mesh();
 };
