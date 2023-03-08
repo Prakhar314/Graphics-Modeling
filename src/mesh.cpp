@@ -127,13 +127,37 @@ Mesh::Mesh(std::string filename){
       glm::ivec3 triangle;
       for(int i=0; i<3; i++){
           s >> temp;
-          std::string last_val(temp.substr(temp.rfind("/") + 1)); 
+          //TODO: is this correct?
+          std::string last_val(temp.substr(0,temp.find("/"))); 
           triangle[i] = stoi(last_val);
       }
       triangles.push_back(triangle - 1);
     }
   }
   init(&vertices[0], vertices.size(), &normals[0], normals.size(), &triangles[0], triangles.size());
+}
+
+void Mesh::recompute_normals(){
+  // reset normals
+  for (size_t i = 0; i < this->numVertices; i++) {
+    this->vertices[i].normal = glm::vec3(0.0f, 0.0f, 0.0f);
+  }
+  // weighted sum of face normals
+  for (size_t i = 0; i < this->numTriangles; i++) {
+    glm::vec3 e1 = this->triangles[i].halfEdge->next->head->position - this->triangles[i].halfEdge->head->position;
+    glm::vec3 e2 = this->triangles[i].halfEdge->prev->head->position - this->triangles[i].halfEdge->head->position;
+    glm::vec3 normal = glm::cross(e1, e2);
+//    normal = glm::normalize(normal);
+    float weight = 1 / glm::length(e1) / glm::length(e2);
+    normal = normal * weight * weight;
+    this->triangles[i].halfEdge->head->normal += normal;
+    this->triangles[i].halfEdge->next->head->normal += normal;
+    this->triangles[i].halfEdge->prev->head->normal += normal;
+  }
+  // normalize
+  for (size_t i = 0; i < this->numVertices; i++) {
+    this->vertices[i].normal = glm::normalize(this->vertices[i].normal);
+  }
 }
 
 void Mesh::freeArrays(){
