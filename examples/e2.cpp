@@ -2,6 +2,9 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
+/**
+ * Sphere example
+ */
 int main(){
   int m = 8;
   int n = 8;

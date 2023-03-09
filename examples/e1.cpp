@@ -1,6 +1,9 @@
 #include "../src/mesh.hpp"
 #include <iostream>
 
+/**
+ * Square plane example
+ */
 int main(){
   int m = 10;
   int n = 10;

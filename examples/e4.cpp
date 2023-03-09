@@ -1,7 +1,9 @@
 
 #include "../src/mesh.hpp"
 #include <iostream>
-
+/**
+ * Smoothing example
+*/
 int main(){
   //Mesh mesh("meshes/bunny-1k.obj");
   //Mesh mesh("meshes/cube.obj");
