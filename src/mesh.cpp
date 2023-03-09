@@ -1,5 +1,6 @@
 #include "mesh.hpp"
 #include "viewer.hpp"
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -35,6 +36,7 @@ void Mesh::init(glm::vec3 *vertices, int numVertices, glm::vec3* normals, int nu
     // Set the half edge properties
     for(int j=0; j<3; j++){
       edges[j].head = &this->vertices[triangles[i][j]];
+      this->vertices[triangles[i][j]].halfEdge = &edges[j];
       // Check if the other half of this edge already exists
       int v0 = triangles[i][j];
       int v1 = triangles[i][(j + 1) % 3];
@@ -86,6 +88,10 @@ void Mesh::view(){
 	v.setNormals(this->numVertices, normals);
 	v.setTriangles(this->numTriangles, triangles);
 	v.view();
+  // local arrays
+  delete [] vertices;
+  delete [] normals;
+  delete [] triangles;
 }
 
 void Mesh::print(){
@@ -158,6 +164,45 @@ void Mesh::recompute_normals(){
   for (size_t i = 0; i < this->numVertices; i++) {
     this->vertices[i].normal = glm::normalize(this->vertices[i].normal);
   }
+}
+
+void Mesh::smoothing(int iter, float lambda, float mu){
+  glm::vec3* delta = new glm::vec3[this->numVertices];
+  for(int i=0; i<iter; i++){
+    for(int stage=0; stage<2; stage++){
+      // for Taubin smoothing
+      float lambda_applied = lambda;
+      if(stage%2==1){
+        lambda_applied = mu;
+      }
+      // reset delta
+      std::fill_n(delta, this->numVertices, glm::vec3(0));
+      // compute delta                                        
+      for (size_t j = 0; j < this->numVertices; j++) {        
+        HalfEdge* startEdge = this->vertices[j].halfEdge;     
+        HalfEdge* e = startEdge;                              
+        int neighbors = 0;                                    
+        // go anti-clockwise                                  
+        do{                                                   
+          e = e->prev->pair;                                  
+        }while(e!=nullptr && e != startEdge);                 
+        // go clockwise                                       
+        do{                                                   
+          neighbors++;                                        
+          delta[j] += e->next->head->position;                
+          e = e->pair->next;                                  
+        }while(e!=nullptr && e != startEdge);                 
+        // average                                            
+        delta[j] /= (float) neighbors;                        
+        delta[j] -= this->vertices[j].position;               
+      }                                                       
+      // update vertices at the end of each iteration         
+      for (size_t j = 0; j < this->numVertices; j++) {        
+        this->vertices[j].position += lambda_applied * delta[j];      
+      }                                                       
+    }   
+  }
+  delete [] delta;
 }
 
 void Mesh::freeArrays(){

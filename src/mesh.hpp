@@ -56,6 +56,7 @@ class Mesh
     Mesh(std::string filename);
     void init(glm::vec3 *vertices, int numVertices, glm::vec3* normals, int numNormals, glm::ivec3 *triangles, int numTriangles);
     void recompute_normals();
+    void smoothing(int iter, float lambda, float mu=0.0f);
     void print();
     void view();
     void freeArrays();

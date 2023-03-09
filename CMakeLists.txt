@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(a1)
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -g")
 
 find_package(GLEW REQUIRED)
 find_package(glm REQUIRED)
@@ -26,3 +26,6 @@ target_link_libraries(e2 mesh)
 
 add_executable(e3 examples/e3.cpp)
 target_link_libraries(e3 mesh)
+
+add_executable(e4 examples/e4.cpp)
+target_link_libraries(e4 mesh)
