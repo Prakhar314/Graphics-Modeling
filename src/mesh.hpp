@@ -1,28 +1,27 @@
 #pragma once
+#include <cstdint>
 #include <glm/glm.hpp>
 #include <memory>
 #include <vector>
-#include <unordered_map>
 
 struct HalfEdge;
 struct Face
 {
-    HalfEdge* halfEdge = nullptr;
+    uint32_t halfEdge = 0;
 };
 struct Vertex
 {
-    HalfEdge* halfEdge = nullptr;
-    int index_mesh;
+    uint32_t halfEdge = 0;
     glm::vec3 normal;
     glm::vec3 position;
 };
 struct HalfEdge
 {
-    HalfEdge* next = nullptr;
-    HalfEdge* prev = nullptr;
-    HalfEdge* pair = nullptr;
-    Vertex* head = nullptr;
-    Face* left = nullptr;
+    uint32_t next = 0;
+    uint32_t prev = 0;
+    uint32_t pair = 0;
+    uint32_t head = 0;
+    uint32_t left = 0;
 };
 
 template <class T1, class T2>
@@ -45,11 +44,9 @@ class Mesh
 {
   private:
     /* data */
-    Face* triangles = nullptr;
-    Vertex* vertices = nullptr;
-    HalfEdge* halfEdges = nullptr;
-    size_t numVertices;
-    size_t numTriangles;
+    std::vector<Vertex> vertices;
+    std::vector<Face> triangles;
+    std::vector<HalfEdge> halfEdges;
 
   public:
     Mesh(glm::vec3 *vertices, int numVertices, glm::vec3* normals, int numNormals, glm::ivec3 *triangles, int numTriangles);
@@ -60,5 +57,14 @@ class Mesh
     void print();
     void view();
     void freeArrays();
-    ~Mesh();
+    
+    uint32_t& edge_next(uint32_t he);
+    uint32_t& edge_prev(uint32_t he);
+    uint32_t& edge_pair(uint32_t he);
+    uint32_t& edge_head(uint32_t he);
+    uint32_t& edge_left(uint32_t he);
+
+    uint32_t& vertex_halfEdge(uint32_t v);
+
+    uint32_t& face_halfEdge(uint32_t f);
 };
