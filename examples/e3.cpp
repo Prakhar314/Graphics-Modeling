@@ -4,8 +4,9 @@
 /**
  * Mesh reading example
 */
-int main(){
-  Mesh mesh("meshes/bunny-1k.obj");
+int main(int argc, char* argv[]){
+  Mesh mesh(argv[1]);
+  //Mesh mesh("meshes/bunny-1k.obj");
   //Mesh mesh("meshes/cube.obj");
   //Mesh mesh("meshes/teapot.obj");
   //Mesh mesh("meshes/noisycube.obj");
