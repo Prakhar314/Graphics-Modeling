@@ -67,4 +67,13 @@ class Mesh
     uint32_t& vertex_halfEdge(uint32_t v);
 
     uint32_t& face_halfEdge(uint32_t f);
+    
+    uint32_t push_vertex();
+    uint32_t push_triangle();
+    uint32_t push_halfEdge();
+
+    void edge_flip(uint32_t he);
+    void edge_split(uint32_t he);
+
+    void loop_subdivision();
 };
