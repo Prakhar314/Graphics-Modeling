@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(a1)
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -g")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -O3")
 
 find_package(GLEW REQUIRED)
 find_package(glm REQUIRED)
