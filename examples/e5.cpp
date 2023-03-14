@@ -7,6 +7,7 @@
  */
 int main(){
   Mesh mesh("meshes/bunny-1k.obj");
+  mesh.loop_subdivision();
   mesh.view();
   mesh.loop_subdivision();
   mesh.view();
