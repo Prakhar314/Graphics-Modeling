@@ -2,6 +2,7 @@
 #include "viewer.hpp"
 #include <algorithm>
 #include <cstdint>
+#include <glm/geometric.hpp>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -21,7 +22,7 @@ void Mesh::init(glm::vec3 *vertices, int numVertices, glm::vec3* normals, int nu
   for (int i = 0; i < numVertices; i++) {
     this->vertices[i + 1].position = vertices[i];
     if (i < numNormals){
-      this->vertices[i + 1].normal = normals[i];
+      this->vertices[i + 1].normal = glm::normalize(normals[i]);
     }
     else{
       this->vertices[i + 1].normal = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -109,6 +110,11 @@ void Mesh::print(){
     std::cout << " " << edge_head(he) - 1;
     std::cout << " " << edge_head(edge_next(he)) - 1;
     std::cout << " " << edge_head(edge_prev(he)) - 1 << std::endl;
+  }
+  std::cout << "normals: " << std::endl;
+  for (size_t i = 1; i < this->vertices.size(); i++) {
+    Vertex& v = this->vertices[i];
+    std::cout << "  " << v.normal.x << " " << v.normal.y << " " << v.normal.z << std::endl;
   }
 }
 
@@ -554,7 +560,6 @@ void Mesh::loop_subdivision(){
 
   for(uint32_t i=1; i<initial_vertex_count; i++){
     Vertex& v = this->vertices[i];
-    glm::vec3 temp(0.0f);
     uint32_t he = v.halfEdge;
     {
       uint32_t temp = he;
@@ -570,6 +575,7 @@ void Mesh::loop_subdivision(){
     }
     int count = 0;
     // finding all the neighbours, clockwise
+    glm::vec3 temp(0.0f);
     do{
         temp += this->vertices[edge_head(edge_next(he))].position;
         count++;
@@ -580,7 +586,7 @@ void Mesh::loop_subdivision(){
         he = edge_next(he);
     }
     while(he!=v.halfEdge);
-    float u;
+    float u = 0.0f;
     if(count==3){
         u = 3.0f/16.0f;
     }

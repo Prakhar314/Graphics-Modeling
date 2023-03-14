@@ -5,9 +5,9 @@
 /**
  * Sphere example
  */
-int main(){
-  int m = 8;
-  int n = 8;
+int main(int argc, char* argv[]){
+  int m = atoi(argv[1]);
+  int n = atoi(argv[2]);
   int numVertices = m*(n-1) + 2;
   int numTriangles = 2*m*(n-1);
   glm::vec3 *vertices = new glm::vec3[numVertices];

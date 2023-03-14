@@ -4,9 +4,9 @@
 /**
  * Square plane example
  */
-int main(){
-  int m = 10;
-  int n = 10;
+int main(int argc, char* argv[]){
+  int m = atoi(argv[1]);
+  int n = atoi(argv[2]);
   int numVertices = (m+1)*(n+1);
   int numTriangles = 2*m*n;
   glm::vec3 *vertices = new glm::vec3[numVertices];
@@ -15,7 +15,7 @@ int main(){
   // Create the vertices
   for (size_t i = 0; i < m+1; i++) {
     for (size_t j = 0; j < n+1; j++) {
-      vertices[i*(n+1)+j] = glm::vec3(1.0f * i / m, 1.0f * j / n, 0) - 0.5f;
+      vertices[i*(n+1)+j] = glm::vec3(1.0f * i / m, 1.0f * j / n, 0.5f) - 0.5f;
       normals[i*(n+1)+j] = glm::vec3(0,0,1);
     }
   }
